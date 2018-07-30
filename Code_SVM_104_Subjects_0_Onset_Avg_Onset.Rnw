@@ -165,13 +165,14 @@ plot(svm_train_linear_tuned)
 (g_test_data$Label)
 @
 
-\subsection{Non-Linear SVM: Performance Measure using RBF SVM}
+\subsection{Linear SVM: Performance Measure using Tuned Linear SVM}
 
 <<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
 # Display confusion matrix
-(confusionMatrix(testPrediction_RBF_SVM, g_test_data$Label))
+(confusionMatrix(testPrediction_tuned_L_SVM, g_test_data$Label))
 
 @
+
 
 \section{Tune Non-Linear SVM Parameters}
 <<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
