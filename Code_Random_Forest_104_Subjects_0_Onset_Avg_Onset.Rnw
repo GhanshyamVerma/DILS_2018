@@ -126,7 +126,7 @@ proc.time()-pt
 stopCluster(cl)
 
 # Save the trained model for future use
-save(RF_train1, file = "RF_train1_104_sub_0_AvgOnset_Train_75.rda")
+save(RF_train1, file = "RF_train1_104_sub_0_AvgOnset.rda")
 
 # Important Genes
 (varImp(RF_train1))
