@@ -1,65 +1,16 @@
-%\documentclass[12pt]{article}
-\documentclass[a4paper, 10pt]{article}
-\usepackage{graphicx}
-\usepackage[utf8]{inputenc}
-\usepackage{hyperref}
-\usepackage[backend=bibtex, sorting=none]{biblatex}
-\bibliography{references}
-
-% Preamble:
-\addtolength{\oddsidemargin}{-.875in}
-	\addtolength{\evensidemargin}{-.875in}
-	\addtolength{\textwidth}{1.75in}
-
-	\addtolength{\topmargin}{-.875in}
-	\addtolength{\textheight}{1.75in}
-\title{\bf \bf Respiratory Viral Data Set: KNN on 64 Sujects Data at 0 and 48 Hours}
-\author{Ghanshyam Verma}
-\date{}
-
-% add references here
-\begin{filecontents*}{references.bib}
-
-
-\end{filecontents*}
-% Document:
-\begin{document}
-% 
-% mean(1:10)
-% plot(1:10)
-\maketitle
-%\tableofcontents
-
-\section{Data Import}
-
-<<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
-#Libraries 
-library(class)
-library(caret)
+# Libraries 
+library(class) # For various classification functions
+library(caret) # For various machine learning functions
 library(dplyr) # For efficient access of dataframes 
-library(pROC) # For Plotting the ROC curves
-library(ggplot2)
+library(ggplot2) # For plots
 
-# Set working directory
-getwd()
-setwd("/Users/ghanshyamverma/Documents/Respiratory_Data/The_64_Subjects_0_48_Hour/KNN")
-@
-
-
-<<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
 # Read the labeled gene expression data
 Data_64_Subjects_0_48_Hours <- read.csv("Data_64_Subjects_0_48_Hours.csv", 
                                       header = TRUE, sep = ",")
 
-
 # Data Display
 Data_64_Subjects_0_48_Hours[c(1:8),c(1:8)] # show first 8 rows
 
-
-@
-\section{Data Partitioning into Training and Test Set}
-
-<<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
 ## Dividing data set into train (78%) and test (22%) using createDataPartition function of caret package
 set.seed(1234)
 index_Train <- createDataPartition(y = Data_64_Subjects_0_48_Hours$Label, p = 0.78, list = 
@@ -74,18 +25,6 @@ g_test_data <- Data_64_Subjects_0_48_Hours[-index_Train, ]
 # Converting class labels into categorical variable
 g_train_data[["Label"]] = factor(g_train_data[["Label"]])
 
-@
-
-\section{KNN: Using Caret Package and Passing Values of K in Grid Search}
-
-<<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
-
-# Enable Parallel Processing
-library(doSNOW)
-library(doParallel)
-cl <- makeCluster(detectCores())
-registerDoSNOW(cl)
-pt<-proc.time()
 set.seed(1234)
 
 #10-fold cross validation, repeating 3 times
@@ -95,7 +34,6 @@ cross_validation_10_fold <- trainControl(method = "repeatedcv", # apply repeated
                                          search = "grid")  
                                          
 set.seed(1234)
-
 
 metric <- "Accuracy"
 grid <- expand.grid(k = c(1:50))
@@ -108,37 +46,15 @@ grid <- expand.grid(k = c(1:50))
                    tuneGrid = grid,
                    trControl = cross_validation_10_fold))
 
-# Stop Parallel Processing
-proc.time()-pt
-stopCluster(cl)
-@
-
-\subsection{KNN: Ploting Results}
-
-<< out.width='4.5in', include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
 # plot the trained KNN classifier
 plot(KNN_train, main = "Accuracy of classifier at different values of k")
-@
 
-
-\subsection{KNN: Test Set Prediction}
-
-<<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
 # Predicting Test Set 
 # Passing test data without labels (without fist column which contains labels)
 (testPrediction <- predict(KNN_train, newdata = g_test_data[,2:12024]))
 
 # Test data set
 (g_test_data$Label)
-@
 
-\subsection{KNN: Performance Measure}
-
-<<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
 # Display confusion matrix
 (confusionMatrix(testPrediction, g_test_data$Label))
-
-@
-
-
-\end{document} 
