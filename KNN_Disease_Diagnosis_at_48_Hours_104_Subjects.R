@@ -1,9 +1,8 @@
-#Libraries 
-library(class)
-library(caret)
+# Libraries 
+library(class) # For various classification functions
+library(caret) # For various machine learning functions
 library(dplyr) # For efficient access of dataframes 
-library(pROC) # For Plotting the ROC curves
-library(ggplot2)
+library(ggplot2) # For plots
 
 # Read the labeled gene expression data
 All_104_Subjects_0_48_Hr <- read.csv("Data_104_Subjects_0_48_Hours.csv", 
@@ -32,13 +31,6 @@ g_test_data <- All_104_Subjects_0_48_Hr[-index_Train, ]
 # Converting class labels into categorical variable
 g_train_data[["Label"]] = factor(g_train_data[["Label"]])
 
-
-# Enable Parallel Processing
-library(doSNOW)
-library(doParallel)
-cl <- makeCluster(detectCores())
-registerDoSNOW(cl)
-pt<-proc.time()
 set.seed(1234)
 
 #10-fold cross validation, repeating 3 times
@@ -61,9 +53,6 @@ grid <- expand.grid(k = c(1:50))
                    tuneGrid = grid,
                    trControl = cross_validation_10_fold))
 
-# Stop Parallel Processing
-proc.time()-pt
-stopCluster(cl)
 
 # plot the trained KNN classifier
 plot(KNN_train, main = "Accuracy of classifier at different values of k")
