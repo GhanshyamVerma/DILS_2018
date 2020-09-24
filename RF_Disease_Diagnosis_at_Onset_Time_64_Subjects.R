@@ -1,54 +1,9 @@
-%\documentclass[12pt]{article}
-\documentclass[a4paper, 10pt]{article}
-\usepackage{graphicx}
-\usepackage[utf8]{inputenc}
-\usepackage{hyperref}
-\usepackage[backend=bibtex, sorting=none]{biblatex}
-\bibliography{references}
 
-% Preamble:
-\addtolength{\oddsidemargin}{-.875in}
-	\addtolength{\evensidemargin}{-.875in}
-	\addtolength{\textwidth}{1.75in}
+# Libraries 
+library(class) # For various classification functions
+library(caret) # For various machine learning functions
+library(randomForest) # For Random Forest
 
-	\addtolength{\topmargin}{-.875in}
-	\addtolength{\textheight}{1.75in}
-\title{\bf \bf Respiratory Viral Data Set: Random Forest on 64 Subjects Data at 0 and Onset Time}
-\author{Ghanshyam Verma}
-\date{}
-
-% add references here
-\begin{filecontents*}{references.bib}
-
-
-\end{filecontents*}
-% Document:
-\begin{document}
-% 
-% mean(1:10)
-% plot(1:10)
-\maketitle
-%\tableofcontents
-
-
-
-\section{Random Forest on 64 Subjects Data at 0 and Onset Time}
-
-<<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
-## Loading data set 
-#Libraries 
-library(class)
-library(caret)
-library(randomForest)
-library(mlbench)
-
-# Set working directory
-getwd()
-setwd("/Users/ghanshyamverma/Documents/Respiratory_Data/The_64_Sub_0_Onset")
-@
-
-
-<<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
 # Read the labeled gene expression data
 Data_64_Subjects_0_Onset <- read.csv("Data_64_Subjects_0_Onset_Time.csv", 
                                       header = TRUE, sep = ",")
@@ -60,12 +15,6 @@ Data_64_Subjects_0_Onset[c(1:7),c(1:7)] # show first 7 rows
 # Display the dimensions (rows columns)
 (dim(Data_64_Subjects_0_Onset))
  
-@
-
-
-\section{Data Partitoining into Training and Test Set}
-
-<<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
 ## Dividing data set into train (78%) and test (22%) using createDataPartition function of caret package
 set.seed(1234)
 index_Train <- createDataPartition(y = Data_64_Subjects_0_Onset$Label, 
@@ -81,9 +30,7 @@ g_test_data <- Data_64_Subjects_0_Onset[-index_Train, ]
 g_train_data[["Label"]] = factor(g_train_data[["Label"]])
 g_test_data[["Label"]] = factor(g_test_data[["Label"]])
 
-@
 
-<<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
 # Enable Parallel Processing
 library(doSNOW)
 library(doParallel)
@@ -123,10 +70,6 @@ RF_train1 <- train(Label~.,  # Class labels of training data
                    # Passing training control parameters
                    trControl = cross_validation_10_fold)
 
-# Stop Parallel Processing
-proc.time()-pt
-stopCluster(cl)
-
 # Save the trained model for future use
 save(RF_train1, file = "RF_train1_64_sub_0_Onset_Time.rda")
 
@@ -143,11 +86,7 @@ print(RF_train1)
 # Training set prediction
 Train_Predict1 <- predict(RF_train1)
 write.table(Train_Predict1, file = "Train_Predict1.tsv", sep = "\t")
-@
 
-\subsection{Random Forest: Test Set Prediction}
-
-<<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
 # Predicting Test Set 
 # Passing test data without labels (without fist column which contains labels)
 (testPrediction <- predict(RF_train1, newdata = g_test_data[,2:12024]))
@@ -158,15 +97,6 @@ write.table(Class_probability1, file = "Class_probability1.tsv", sep = "\t")
 
 # Test data set
 (g_test_data$Label)
-@
 
-\subsection{Random Forest: Performance Measure}
-
-<<include=TRUE, message=FALSE, warning=FALSE, error=FALSE>>=
 # Display confusion matrix
 (confusionMatrix(testPrediction, g_test_data$Label))
-
-@
-
-
-\end{document} 
