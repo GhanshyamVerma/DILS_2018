@@ -7,3 +7,25 @@ We used four well-established Machine Learning algorithms to predict the state o
 ### The labelled gene expression data sets and codes are available on this Github repository. 
 
 This work is published in DILS 2018 Conference. Link to the published paper: https://link.springer.com/chapter/10.1007/978-3-030-06016-9_11
+
+## How to Install and Run the Software
+The code is written in R programming language and can run on Windows, MacOS, or Linux. However, the R programming language is required to be installed before you run the software/code.
+
+### Required Programming Language:
+R version 3.6.2 or above
+
+You can download the latest version of R from here:
+* [Install R](https://www.r-project.org/)
+
+### Required packages:
+Install all the packages listed in the requirements.txt file
+
+### Steps to run the code:
+1. Download the provided R code, gene expression datasets, and knowledge base, and keep them in the same folder. 
+2. Open the terminal.
+3. Go to the folder where you downloaded all the codes and datasets. You can use cd command for that.
+4. Run the code using this command: 
+```
+R CMD BATCH code_file_name.R
+```
+These commands will create a .Rout (output) file in the same folder. This .Rout file will contain all the results. 
